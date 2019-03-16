@@ -1,66 +1,68 @@
-NAME,HEIGHT,PROM,LON,LAT
-Seahan,647.3,93.8,-6.382208,53.216951
-Corrig,617.1,28.05,-6.368567,53.21383
-Seefingan,722.9,97.9,-6.374931,53.192444
-Seefin,620.6,22.34,-6.394181,53.186149
-Mountpelier Hill,383,68,-6.330326,53.251706
-Silsean,698,43,-6.47351,53.091921
-Moanbane,703,108,-6.457968,53.102845
-Mullaghcleevaun,849,374,-6.40668,53.103616
-Mullaghcleevaun East Top,790,45,-6.384801,53.10014
-Duff Hill,720,65,-6.367214,53.11391
-Gravale,718,123,-6.350262,53.124064
-Carrigvore,682,67,-6.323459,53.130277
-Camaderry South East Top,677.3,15.03,-6.376204,53.015974
-Camaderry, 698.6,71,-6.388958,53.022824
-Tomaneena,682.4,54,-6.417052,53.024837
-Derrybawn,474,34,-6.334118,52.998291
-Saggart Hill,396.9,160,-6.477653,53.246793
-Cupidstown Hill,378.6,54,-6.495045,53.226342
-Knockannavea,400.8,98,-6.413477,53.250219
-Tibradden,467,30,-6.280343,53.238594
-Two Rock,536,171,-6.24512,53.239168
-Glendoo,586,109,-6.291694,53.222124
-Knocknagun,555,63,-6.259197,53.204921
-Prince William's Seat,555,63,-6.239552,53.202179
-Carrickgollogan,276,118,-6.1575,53.216997
-Ballineddan,652,27,-6.508872,52.958851
-Slievemaan,759,54,-6.48655,52.958839
-Tonelagee NE Top,668,23,-6.366619,53.056695
-Tonelagee,817,202,-6.382597,53.054208
-Stoney Top,714,19,-6.386126,53.064339
-Kanturk,523,15,-6.322417,53.068778
-Scarr North-West Top,561,13,-6.32124,53.060673 
-Scarr,641,231,-6.311412,53.055277
-Carrignagunneen,561,12,-6.426808,53.070051
-Fair Mountain,571.2,18.31,-6.420398,53.041363
-Ballinafunshoge,480,92,-6.261486,53.076521
-Luggala,595,110,-6.283449,53.105111
-White Hill,630.9,12,-6.238853,53.11846
-Djouce,725,200,-6.239959,53.130851
-War Hill,686,71,-6.253946,53.140034 
-Maulin,570,70,-6.230299,53.155403
-Tonduff East Top,593,15,-6.25151,53.155842
-Tonduff,642,117,-6.267332,53.161294
-Knockree,342,95,-6.228052,53.180549
-Carrigoona Commons East,242,103,-6.155769,53.173287
-Little Sugar Loaf,342,247,-6.115612,53.166098
-Great Sugar Loaf,501,216,-6.150518,53.15419
-Bray Head,240,127,-6.082796,53.177652
-Killiney Hill,153.5,116,-6.111918,53.265598
-Ben of Howth,171,167,-6.069313,53.373358
-Slievecorragh,418,151,-6.586077,53.079617
-Church Mountain,544,129,-6.585862,53.053851 
-Corriebracks,531,116,-6.558226,53.044452
-Slieveroe,332,100,-6.575961,53.169464 
-Lugnagun,446.2,43,-6.487318,53.153464
-Carrigleitrim ,408,53,-6.434061,53.166164
-Sorrel Hill,599.5,154.46,-6.443084,53.147589
-Black Hill,602.2,67.25,-6.445302,53.121981
-Kippure,757,262,-6.331884,53.178139
-Robber's Pass Hill,508.9,22.31,-6.252906,53.103417
-Sleamaine,430,42,-6.254259,53.087702
-Ballinafunshoge,480,92,-6.261486,53.076521
+NAME,HEIGHT,PROM,LON,LAT,FACT
+Seahan,647.3,93.8,-6.382208,53.216951,"Seahan has two megalithic cairns on its summit."
+Corrig,617.1,28.05,-6.368567,53.21383,"Corrig Mountain is the 257th highest place in Ireland."
+Seefingan,722.9,97.9,-6.374931,53.192444,"Seefingan, like Seefin and Seahan, has a large megalithic cairn on its summit."
+Seefin,620.6,22.34,-6.394181,53.186149,"There is an impressive megalithic cairn on Seefin. It is still possible to enter it, although the roof has collapsed at the centre."
+Mountpelier Hill,383,68,-6.330326,53.251706,"Mountpelier Hill is commonly referred to as the Hell Fire Club, the popular name given to the ruined building at the summit."
+Silsean,698,43,-6.47351,53.091921," "
+Moanbane,703,108,-6.457968,53.102845," "
+Mullaghcleevaun,849,374,-6.40668,53.103616,"Mullaghcleevaun is the second highest mountain in the Dublin/Wicklow area and the 20th highest in Ireland. Mullaghcleevaun is the second highest point in county Wicklow. "
+Mullaghcleevaun East Top,790,45,-6.384801,53.10014," "
+Duff Hill,720,65,-6.367214,53.11391,"Duff Hill is the 99th highest place in Ireland."
+Gravale,718,123,-6.350262,53.124064,"Gravale is the 100th highest place in Ireland."
+Carrigvore,682,67,-6.323459,53.130277," "
+Camaderry South East Top,677.3,15.03,-6.376204,53.015974," "
+Camaderry, 698.6,71,-6.388958,53.022824," "
+Tomaneena,682.4,54,-6.417052,53.024837," "
+Derrybawn,474,34,-6.334118,52.998291," "
+Saggart Hill,396.9,160,-6.477653,53.246793," "
+Cupidstown Hill,378.6,54,-6.495045,53.226342,"Cupidstown Hill is the highest point in Co. Kildare and is the 1000th highest place in Ireland. However, it is on the fringes of the Dublin Mountains and is dwarfed by other nearby hills such as Seefingan and Kippure, both on the Dublin/Wicklow county boundary. It is therefore less well known than certain lesser heights in Co. Kildare, such as Dunmurry Hill and the Hill of Allen, which dominate their surroundings to a greater extent. Cupidstown and Cupidstownhill are names of townlands in the parish of Kilteel."
+Knockannavea,400.8,98,-6.413477,53.250219," "
+Tibradden,467,30,-6.280343,53.238594," "
+Two Rock,536,171,-6.24512,53.239168,"This summit is also known as Fairy Castle."
+Glendoo,586,109,-6.291694,53.222124," "
+Knocknagun,555,63,-6.259197,53.204921," "
+Prince William's Seat,555,63,-6.239552,53.202179,"Apparently named after William, son of George IV, after a royal visit in 1821."
+Carrickgollogan,276,118,-6.1575,53.216997," "
+Ballineddan,652,27,-6.508872,52.958851,"Ballineddan Mountain is a townland. The name is derived from Buaile an Fheadain meaning 'milking place of the stream'"
+Slievemaan,759,54,-6.48655,52.958839," "
+Tonelagee NE Top,668,23,-6.366619,53.056695," "
+Tonelagee,817,202,-6.382597,53.054208," "
+Stoney Top,714,19,-6.386126,53.064339," "
+Kanturk,523,15,-6.322417,53.068778," "
+Scarr North-West Top,561,13,-6.32124,53.060673," "
+Scarr,641,231,-6.311412,53.055277," "
+Carrignagunneen,561,12,-6.426808,53.070051," "
+Fair Mountain,571.2,18.31,-6.420398,53.041363," "
+Ballinafunshoge,480,92,-6.261486,53.076521," "
+Luggala,595,110,-6.283449,53.105111," "
+White Hill,630.9,12,-6.238853,53.11846," "
+Djouce,725,200,-6.239959,53.130851," "
+War Hill,686,71,-6.253946,53.140034," "
+Maulin,570,70,-6.230299,53.155403," "
+Hill of Allen,219,131,-6.86396,53.229384," "
+Hill of Tara,155,84,-6.611723,53.579513,"Tara is a royal place, in pre-history and in historic times 142 kings are said to have reigned in the name of Tara. The Coronation stone called the Lia Fail or Stone of Destiny has rested here down the ages. It was here that the most powerful of Irish kings held their great inaugural feasts. Tara is a sacred place in ancient Irish religion and mythology Tara was revered as a dwelling of the gods and an entrance place to the otherworld of eternal joy and plenty where no mortal ever grew old. Tara is a Celtic place and is one of the largest complexes of Celtic monuments in all of Europe. The first settlers came here 6,000 years ago, they and the Celts who followed choose Tara as a very special place. It has many important features, including the banqueting hall, the rath of the synods, the Kings Seat, Cormac's House and the highest and possibly most important of them all, the Mound of the Hostages."
+Tonduff East Top,593,15,-6.25151,53.155842," "
+Tonduff,642,117,-6.267332,53.161294," "
+Knockree,342,95,-6.228052,53.180549," "
+Carrigoona Commons East,242,103,-6.155769,53.173287," "
+Little Sugar Loaf,342,247,-6.115612,53.166098," "
+Great Sugar Loaf,501,216,-6.150518,53.15419," "
+Bray Head,240,127,-6.082796,53.177652," "
+Killiney Hill,153.5,116,-6.111918,53.265598,"Killiney Hill is the most northerly summit in the Dublin/Wicklow area."
+Ben of Howth,171,167,-6.069313,53.373358," "
+Slievecorragh,418,151,-6.586077,53.079617," "
+Church Mountain,544,129,-6.585862,53.053851,"This mountain is first mentioned under the name Sliabh an Chodaigh, 'mountain of the covenant' in a tale dating from before the 12th century. Subsequently the name appears as Sliabh gCod or similar, which is obscure in meaning, unless it is simply a corruption of the earlier form. The site is pre-Christian. There are the remains of a large cairn on top of the mountain. The stones have evidently been scattered into irregular heaps. There is a partially cleared space in the middle, in which there are the foundations of a building, apparently a small ancient church."
+Corriebracks,531,116,-6.558226,53.044452," "
+Slieveroe,332,100,-6.575961,53.169464,"Slieveroe is the second highest point in county Kildare."
+Lugnagun,446.2,43,-6.487318,53.153464," "
+Carrigleitrim ,408,53,-6.434061,53.166164," "
+Sorrel Hill,599.5,154.46,-6.443084,53.147589," "
+Black Hill,602.2,67.25,-6.445302,53.121981," "
+Kippure,757,262,-6.331884,53.178139,"Kippure is the highest point in Dublin"
+Robber's Pass Hill,508.9,22.31,-6.252906,53.103417," "
+Sleamaine,430,42,-6.254259,53.087702," "
+Ballinafunshoge,480,92,-6.261486,53.076521," "
 
 
 
