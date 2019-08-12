@@ -39,7 +39,7 @@ def color_picker(height):
 #     elif height >= 600 and prominence >= 15:
 #         return "blue"
 
-map = folium.Map(location = [53.124, -6.350], zoom_start = 10)
+map = folium.Map(location = [53.124, -5.650], zoom_start = 9)
 
 fg_mountains = folium.FeatureGroup(name = "Mountains")
 fg_hills = folium.FeatureGroup(name = "Hills")
