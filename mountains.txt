@@ -96,5 +96,9 @@ Croaghanmoira,664,209,-6.366563,52.918455," "
 Croaghanmoira North Top,575,27,-6.374053,52.925711," "
 Carrickashane,508,43,-6.397899,52.914191," "
 Slieve Maan,547.8,92.82,-6.392305,52.931874," "
-
-
+Trooperstown Hill,430,251,-6.263908,52.995147," "
+Brockagh Mountain SE Top,470,25,-6.323745,53.025751," "
+Brockagh Mountain,557,32,-6.348361,53.031002,"Brockagh is a townland in the parish of Derrylossary. Price derives this name from Brocach, 'place frequented by badgers'"
+Brockagh Mountain North-West Top,548,20,-6.35195,53.037738," "
+Tonlagee South-East Top,546,18,-6.360843,53.043037," "
+Knocknacloghoge,534,129,-6.293981,53.087622," "
