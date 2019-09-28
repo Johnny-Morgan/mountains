@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
+import add_mountain
 
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
@@ -34,6 +35,7 @@ class Main(QMainWindow):
         ##### Add Mountain #########
         self.add_mountain = QAction(QIcon("icons/mountain.png"), "Add Mountain", self)
         self.tb.addAction(self.add_mountain)
+        self.add_mountain.triggered.connect(self.func_add_mountain)
         self.tb.addSeparator()
 
     def tab_widget(self):
@@ -61,6 +63,7 @@ class Main(QMainWindow):
         self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date"))
         self.mountains_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
+        #self.mountains_table.doubleClicked.connect(self.selected_mountain)
 
     def layouts(self):
         ########################
@@ -89,6 +92,9 @@ class Main(QMainWindow):
                 self.mountains_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
         self.mountains_table.setEditTriggers(QAbstractItemView.NoEditTriggers)  # prevents user editing table
+
+    def func_add_mountain(self):
+        self.new_mountain = add_mountain.AddMountain()
 
 
 def main():
