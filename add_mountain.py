@@ -12,7 +12,7 @@ class AddMountain(QWidget):
         super().__init__()
         self.setWindowTitle(" Add Mountain")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(550, 250, 400, 550)
+        self.setGeometry(500, 100, 575, 825)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -41,8 +41,10 @@ class AddMountain(QWidget):
         self.longitude_entry.setPlaceholderText("Enter longitude of mountain")
         self.latitude_entry = QLineEdit()
         self.latitude_entry.setPlaceholderText("Enter latitude of mountain")
-        self.date_entry = QLineEdit()
-        self.date_entry.setPlaceholderText("dd/mm/yyyy")
+        # self.date_entry = QLineEdit()
+        # self.date_entry.setPlaceholderText("dd/mm/yyyy")
+        self.date_entry = QCalendarWidget()
+        self.date_entry.setGridVisible(True)
         self.submit_btn = QPushButton("Submit")
         self.submit_btn.clicked.connect(self.add_mountain)
 
@@ -65,7 +67,8 @@ class AddMountain(QWidget):
         self.bottom_layout.addRow(QLabel("Prominence: "), self.prom_entry)
         self.bottom_layout.addRow(QLabel("Longitude: "), self.longitude_entry)
         self.bottom_layout.addRow(QLabel("Latitude: "), self.latitude_entry)
-        self.bottom_layout.addRow(QLabel("Date: "), self.date_entry)
+        # self.bottom_layout.addRow(QLabel("Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel("Climb Date: "), self.date_entry)
         self.bottom_layout.addRow(QLabel(""), self.submit_btn)
         self.bottom_frame.setLayout(self.bottom_layout)
 
@@ -80,11 +83,14 @@ class AddMountain(QWidget):
         prominence = self.prom_entry.text()
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
-        date = self.date_entry.text()
+        date = self.date_entry.selectedDate().toString()
 
-
-        if name and height and prominence and longitude and latitude and date != "":
+        if name and height and prominence and longitude and latitude != "":
             try:
+                height = float(height)
+                prominence = float(prominence)
+                longitude = float(longitude)
+                latitude = float(latitude)
                 query = "INSERT INTO 'mountain' (name, height, prominence, longitude, latitude, date_climbed) VALUES (?, ?, ?, ?, ?, ?)"
                 cur.execute(query, (name, height, prominence, longitude, latitude, date))
                 con.commit()
@@ -94,9 +100,11 @@ class AddMountain(QWidget):
                 self.prom_entry.setText("")
                 self.latitude_entry.setText("")
                 self.longitude_entry.setText("")
-                self.date_entry.setText("")
-                con.close()
+                # self.date_entry.setText("")
+                # con.close()
+            except Exception:
+                QMessageBox.warning(self, 'Error', 'Invalid entry, input must be a number')
             except:
-                QMessageBox.information(self, "Info", "Mountain has not been added")
+                QMessageBox.warning(self, "Info", "Mountain has not been added")
         else:
-            QMessageBox.information(self, "Info", "Fields cannot be empty!")
+            QMessageBox.warning(self, "Info", "Fields cannot be empty!")
