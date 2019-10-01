@@ -63,7 +63,7 @@ class Main(QMainWindow):
         self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date"))
         self.mountains_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
-        #self.mountains_table.doubleClicked.connect(self.selected_mountain)
+        self.mountains_table.doubleClicked.connect(self.selected_mountain)
 
     def layouts(self):
         ########################
@@ -95,6 +95,137 @@ class Main(QMainWindow):
 
     def func_add_mountain(self):
         self.new_mountain = add_mountain.AddMountain()
+
+    def selected_mountain(self):
+        global mountain_id
+        mountain_list = []
+        for i in range(0, 7):
+            mountain_list.append(self.mountains_table.item(self.mountains_table.currentRow(), i).text())
+
+        mountain_id = mountain_list[0]
+        self.display = DisplayMountain()
+        self.display.show()
+
+
+class DisplayMountain(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(" Mountain Details")
+        self.setWindowIcon(QIcon("icons/mountain.png"))
+        self.setGeometry(500, 100, 575, 875)
+        self.setFixedSize(self.size())
+        self.UI()
+        self.show()
+
+    def UI(self):
+        self.mountain_details()
+        self.widgets()
+        self.layouts()
+
+    def mountain_details(self):
+        global mountain_id
+        query = "SELECT * FROM mountain WHERE id = ?"
+        mountain = cur.execute(query, (mountain_id,)).fetchone()  # single item tuple = (1, )
+
+        self.mountain_name = mountain[1]
+        self.mountain_height = mountain[2]
+        self.mountain_prom = mountain[3]
+        self.mountain_long = mountain[4]
+        self.mountain_lat = mountain[5]
+        self.date_climbed = mountain[7]
+
+    def widgets(self):
+        ##### Top Layout Widgets #####
+        self.mountain_img = QLabel()
+        self.img = QPixmap("icons/mountain.png")
+        self.mountain_img.setPixmap(self.img)
+        self.mountain_img.setAlignment(Qt.AlignCenter)
+        self.title_text = QLabel("Display Mountain")
+        self.title_text.setAlignment(Qt.AlignCenter)
+
+        # #### Bottom Layout Widgets #####
+        self.name_entry = QLineEdit()
+        self.name_entry.setText(self.mountain_name)
+        self.height_entry = QLineEdit()
+        self.height_entry.setText(str(self.mountain_height))
+        self.prominence_entry = QLineEdit()
+        self.prominence_entry.setText(str(self.mountain_prom))
+        self.longitude_entry = QLineEdit()
+        self.longitude_entry.setText(str(self.mountain_long))
+        self.latitude_entry = QLineEdit()
+        self.latitude_entry.setText(str(self.mountain_long))
+        self.date_entry = QCalendarWidget()
+        self.date_entry.setGridVisible(True)
+        self.delete_btn = QPushButton("Delete")
+        self.delete_btn.clicked.connect(self.delete_mountain)
+        self.update_btn = QPushButton("Update")
+        self.update_btn.clicked.connect(self.update_mountain)
+
+    def layouts(self):
+        self.main_layout = QVBoxLayout()
+        self.top_layout = QVBoxLayout()
+        self.bottom_layout = QFormLayout()
+        self.top_frame = QFrame()
+        self.bottom_frame = QFrame()
+
+        ##### Add Widgets #####
+        self.top_layout.addWidget(self.title_text)
+        self.top_layout.addWidget(self.mountain_img)
+        self.top_frame.setLayout(self.top_layout)
+        self.bottom_layout.addRow(QLabel("Name:"), self.name_entry)
+        self.bottom_layout.addRow(QLabel("Height:"), self.height_entry)
+        self.bottom_layout.addRow(QLabel("Prominence:"), self.prominence_entry)
+        self.bottom_layout.addRow(QLabel("Longitude:"), self.longitude_entry)
+        self.bottom_layout.addRow(QLabel("Latitude:"), self.latitude_entry)
+        self.bottom_layout.addRow(QLabel("Climb Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel(""), self.delete_btn)
+        self.bottom_layout.addRow(QLabel(""), self.update_btn)
+        self.bottom_frame.setLayout(self.bottom_layout)
+        self.main_layout.addWidget(self.top_frame)
+        self.main_layout.addWidget(self.bottom_frame)
+
+        self.setLayout(self.main_layout)
+
+    def update_mountain(self):
+        global mountain_id
+        name = self.name_entry.text()
+        height = self.height_entry.text()
+        prominence = self.prominence_entry.text()
+        longitude = self.longitude_entry.text()
+        latitude = self.latitude_entry.text()
+
+        if name and height and prominence and longitude and latitude != "":
+            try:
+                height = float(height)
+                prominence = float(prominence)
+                longitude = float(longitude)
+                latitude = float(latitude)
+                query = "UPDATE mountain SET name = ?, height = ?, prominence = ?, " \
+                        "longitude = ?, latitude = ? WHERE id = ?"
+                cur.execute(query, (name, height, prominence, longitude, latitude, mountain_id))
+                con.commit()
+                QMessageBox.information(self, "Info", "Mountain has been updated")
+                self.close()
+            except Exception:
+                QMessageBox.warning(self, 'Error', 'Invalid entry, input must be a number')
+            except:
+                QMessageBox.warning(self, "Warning", "Mountain has not been updated")
+        else:
+            QMessageBox.warning(self, "Warning", "Fields cannot be empty")
+
+    def delete_mountain(self):
+        global mountain_id
+        mbox = QMessageBox.question(self, "Warning", "Are you sure you want to delete this mountain?",
+                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if mbox == QMessageBox.Yes:
+            try:
+                query = "DELETE FROM mountain WHERE id = ?"
+                cur.execute(query, (mountain_id,))
+                con.commit()
+                QMessageBox.information(self, "Info", "Mountain has been deleted")
+                self.close()
+            except:
+                QMessageBox.warning(self, "Warning", "Mountain has not been deleted")
 
 
 def main():
