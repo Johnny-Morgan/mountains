@@ -31,19 +31,22 @@ mountain_prom = []
 mountain_long = []
 mountain_lat = []
 mountain_fact = []
+date_climbed = []
 
 for i in range(0, len(mountain)):
-    mountain_name.append(mountain[i][0])
-    mountain_height.append(mountain[i][1])
-    mountain_prom.append(mountain[i][2])
-    mountain_long.append(mountain[i][3])
-    mountain_lat.append(mountain[i][4])
-    mountain_fact.append(mountain[i][5])
+    mountain_name.append(mountain[i][1])
+    mountain_height.append(mountain[i][2])
+    mountain_prom.append(mountain[i][3])
+    mountain_long.append(mountain[i][4])
+    mountain_lat.append(mountain[i][5])
+    mountain_fact.append(mountain[i][6])
+    date_climbed.append(mountain[i][7])
 
 html = """
 <b>Name:</b> %s<br>
-<b>Height:</b> %sm<br>
-<b>Prominence:</b> %sm<br>
+<b>Height:</b> %s<br>
+<b>Prominence:</b> %s<br>
+<b>Climbed :</b> %s<br>
 <b>Fun fact:</b> %s
 """
 
@@ -69,14 +72,14 @@ map = folium.Map(location = [53.124, -5.650], zoom_start = 9)
 fg_mountains = folium.FeatureGroup(name = "Mountains")
 fg_hills = folium.FeatureGroup(name = "Hills")
 
-for lat, lon, name, h, prom, f in zip(mountain_lat, mountain_long, mountain_name, mountain_height, mountain_prom, mountain_fact):
-    iframe = folium.IFrame(html = html % (name, str(h), str(prom), f), width = 200, height = 100)
-    if h > 500:
+for lat, lon, name, height, prom, date, fact in zip(mountain_lat, mountain_long, mountain_name, mountain_height, mountain_prom, date_climbed, mountain_fact):
+    iframe = folium.IFrame(html = html % (name, str(height), str(prom), date, fact), width = 200, height = 100)
+    if height > 500:  # mountains are 500m+
         fg_mountains.add_child(folium.CircleMarker(location = [lat, lon], popup = folium.Popup(iframe),
-        radius = 9, fill = True, fill_color = color_picker(h), color = "black", fill_opacity = 0.8))
+        radius = 9, fill = True, fill_color = color_picker(height), color = "black", fill_opacity = 0.8))
     else:
         fg_hills.add_child(folium.CircleMarker(location = [lat, lon], popup = folium.Popup(iframe),
-        radius = 9, fill = True, fill_color = color_picker(h), color = "black", fill_opacity = 0.8))
+        radius = 9, fill = True, fill_color = color_picker(height), color = "black", fill_opacity = 0.8))
 
 map.add_child(fg_mountains)
 map.add_child(fg_hills)

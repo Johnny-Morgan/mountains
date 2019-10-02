@@ -4,6 +4,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
 import add_mountain
+from dateutil import parser
+
 
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
@@ -60,7 +62,7 @@ class Main(QMainWindow):
         self.mountains_table.setHorizontalHeaderItem(3, QTableWidgetItem("Prominence"))
         self.mountains_table.setHorizontalHeaderItem(4, QTableWidgetItem("Longitude"))
         self.mountains_table.setHorizontalHeaderItem(5, QTableWidgetItem("Latitude"))
-        self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date"))
+        self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date climbed"))
         self.mountains_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
         self.mountains_table.doubleClicked.connect(self.selected_mountain)
@@ -156,6 +158,8 @@ class DisplayMountain(QWidget):
         self.latitude_entry.setText(str(self.mountain_long))
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
+        dc = parser.parse(self.date_climbed)
+        self.date_entry.setSelectedDate(dc)
         self.delete_btn = QPushButton("Delete")
         self.delete_btn.clicked.connect(self.delete_mountain)
         self.update_btn = QPushButton("Update")
@@ -193,6 +197,7 @@ class DisplayMountain(QWidget):
         prominence = self.prominence_entry.text()
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
+        date = self.date_entry.selectedDate().toString()
 
         if name and height and prominence and longitude and latitude != "":
             try:
@@ -201,8 +206,8 @@ class DisplayMountain(QWidget):
                 longitude = float(longitude)
                 latitude = float(latitude)
                 query = "UPDATE mountain SET name = ?, height = ?, prominence = ?, " \
-                        "longitude = ?, latitude = ? WHERE id = ?"
-                cur.execute(query, (name, height, prominence, longitude, latitude, mountain_id))
+                        "longitude = ?, latitude = ?, date_climbed = ? WHERE id = ?"
+                cur.execute(query, (name, height, prominence, longitude, latitude, date, mountain_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been updated")
                 self.close()
