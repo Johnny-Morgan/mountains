@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
-import add_mountain
+import add_mountain, style
 from dateutil import parser
 
 
@@ -114,7 +114,7 @@ class DisplayMountain(QWidget):
         super().__init__()
         self.setWindowTitle(" Mountain Details")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(500, 100, 575, 875)
+        self.setGeometry(500, 95, 575, 885)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -170,7 +170,9 @@ class DisplayMountain(QWidget):
         self.top_layout = QVBoxLayout()
         self.bottom_layout = QFormLayout()
         self.top_frame = QFrame()
+        self.top_frame.setStyleSheet(style.top_frame_style())
         self.bottom_frame = QFrame()
+        self.bottom_frame.setStyleSheet(style.bottom_frame_style())
 
         ##### Add Widgets #####
         self.top_layout.addWidget(self.title_text)

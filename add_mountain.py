@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
-import sqlite3
+import sqlite3, style
 
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
@@ -12,7 +12,7 @@ class AddMountain(QWidget):
         super().__init__()
         self.setWindowTitle(" Add Mountain")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(500, 100, 575, 825)
+        self.setGeometry(500, 95, 575, 880)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -51,7 +51,9 @@ class AddMountain(QWidget):
         self.top_layout = QVBoxLayout()
         self.bottom_layout = QFormLayout()
         self.top_frame = QFrame()
+        self.top_frame.setStyleSheet(style.top_frame_style())
         self.bottom_frame = QFrame()
+        self.bottom_frame.setStyleSheet(style.bottom_frame_style())
 
         ##### Add Widgets #####
         ##### Top Layout Widgets #####
