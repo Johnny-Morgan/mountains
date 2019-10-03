@@ -28,6 +28,7 @@ class Main(QMainWindow):
         self.widgets()
         self.layouts()
         self.display_mountains()
+        self.display_hikes()
 
     def tool_bar(self):
         self.tb = self.addToolBar("Tool Bar")
@@ -40,11 +41,20 @@ class Main(QMainWindow):
         self.add_mountain.triggered.connect(self.func_add_mountain)
         self.tb.addSeparator()
 
+        ##### Add Hike #########
+        self.add_hike = QAction(QIcon("icons/hiking.png"), "Add Hike", self)
+        self.tb.addAction(self.add_hike)
+        #self.add_hike.triggered.connect(self.func_add_hike)
+        self.tb.addSeparator()
+
     def tab_widget(self):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
         self.tab1 = QWidget()
         self.tabs.addTab(self.tab1, "Mountains")
+        self.tab2 = QWidget()
+        self.tabs.addTab(self.tab2, "Hikes")
+
 
     def widgets(self):
         ########################
@@ -67,6 +77,28 @@ class Main(QMainWindow):
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
         self.mountains_table.doubleClicked.connect(self.selected_mountain)
 
+        ########################
+        ##### Tab2 Widgets #####
+        ########################
+
+        ##### Main Left Layout Widget #####
+        self.hikes_table = QTableWidget()
+        self.hikes_table.setSortingEnabled(True)
+        self.hikes_table.setColumnCount(6)
+        self.hikes_table.setColumnHidden(0, True)
+        self.hikes_table.setHorizontalHeaderItem(0, QTableWidgetItem("Hike Id"))
+        self.hikes_table.setHorizontalHeaderItem(1, QTableWidgetItem("Length"))
+        self.hikes_table.setHorizontalHeaderItem(2, QTableWidgetItem("Duration"))
+        self.hikes_table.setHorizontalHeaderItem(3, QTableWidgetItem("Total Ascent"))
+        self.hikes_table.setHorizontalHeaderItem(4, QTableWidgetItem("Total Descent"))
+        self.hikes_table.setHorizontalHeaderItem(5, QTableWidgetItem("Date"))
+        self.hikes_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+        #self.hikes_table.doubleClicked.connect(self.selected_hike)
+
     def layouts(self):
         ########################
         ##### Tab1 layouts #####
@@ -81,6 +113,19 @@ class Main(QMainWindow):
         self.main_layout.addLayout(self.main_left_layout)
         self.tab1.setLayout(self.main_layout)
 
+        ########################
+        ##### Tab2 layouts #####
+        ########################
+
+        self.main_layout = QHBoxLayout()
+        self.main_left_layout = QVBoxLayout()
+
+        ##### Add Widgets #####
+        ##### Add Left Main Layout Widgets #####
+        self.main_left_layout.addWidget(self.hikes_table)
+        self.main_layout.addLayout(self.main_left_layout)
+        self.tab2.setLayout(self.main_layout)
+
     def display_mountains(self):
         self.mountains_table.setFont(QFont("Arial", 10))
         for i in reversed(range(self.mountains_table.rowCount())):
@@ -94,6 +139,20 @@ class Main(QMainWindow):
                 self.mountains_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
         self.mountains_table.setEditTriggers(QAbstractItemView.NoEditTriggers)  # prevents user editing table
+
+    def display_hikes(self):
+        self.hikes_table.setFont(QFont("Arial", 10))
+        for i in reversed(range(self.hikes_table.rowCount())):
+            self.hikes_table.removeRow(i)
+
+        query = cur.execute("SELECT id, length, duration, ascent, descent, date FROM hike")
+        for row_data in query:
+            row_number = self.hikes_table.rowCount()
+            self.hikes_table.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                self.hikes_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+
+        self.hikes_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def func_add_mountain(self):
         self.new_mountain = add_mountain.AddMountain()
