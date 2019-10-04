@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
-import add_mountain, style
+import add_mountain, add_hike, style
 from dateutil import parser
 
 
@@ -44,7 +44,7 @@ class Main(QMainWindow):
         ##### Add Hike #########
         self.add_hike = QAction(QIcon("icons/hiking.png"), "Add Hike", self)
         self.tb.addAction(self.add_hike)
-        #self.add_hike.triggered.connect(self.func_add_hike)
+        self.add_hike.triggered.connect(self.func_add_hike)
         self.tb.addSeparator()
 
     def tab_widget(self):
@@ -157,6 +157,9 @@ class Main(QMainWindow):
     def func_add_mountain(self):
         self.new_mountain = add_mountain.AddMountain()
 
+    def func_add_hike(self):
+        self.new_hike = add_hike.AddHike()
+
     def selected_mountain(self):
         global mountain_id
         mountain_list = []
@@ -214,7 +217,7 @@ class DisplayMountain(QWidget):
         self.longitude_entry = QLineEdit()
         self.longitude_entry.setText(str(self.mountain_long))
         self.latitude_entry = QLineEdit()
-        self.latitude_entry.setText(str(self.mountain_long))
+        self.latitude_entry.setText(str(self.mountain_lat))
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         dc = parser.parse(self.date_climbed)
