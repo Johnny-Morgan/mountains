@@ -68,8 +68,8 @@ class Main(QMainWindow):
         self.mountains_table.setColumnHidden(0, True)
         self.mountains_table.setHorizontalHeaderItem(0, QTableWidgetItem("Mountain Id"))
         self.mountains_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
-        self.mountains_table.setHorizontalHeaderItem(2, QTableWidgetItem("Height"))
-        self.mountains_table.setHorizontalHeaderItem(3, QTableWidgetItem("Prominence"))
+        self.mountains_table.setHorizontalHeaderItem(2, QTableWidgetItem("Height (m)"))
+        self.mountains_table.setHorizontalHeaderItem(3, QTableWidgetItem("Prominence (m)"))
         self.mountains_table.setHorizontalHeaderItem(4, QTableWidgetItem("Longitude"))
         self.mountains_table.setHorizontalHeaderItem(5, QTableWidgetItem("Latitude"))
         self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date climbed"))
@@ -87,17 +87,17 @@ class Main(QMainWindow):
         self.hikes_table.setColumnCount(6)
         self.hikes_table.setColumnHidden(0, True)
         self.hikes_table.setHorizontalHeaderItem(0, QTableWidgetItem("Hike Id"))
-        self.hikes_table.setHorizontalHeaderItem(1, QTableWidgetItem("Length"))
+        self.hikes_table.setHorizontalHeaderItem(1, QTableWidgetItem("Length (km)"))
         self.hikes_table.setHorizontalHeaderItem(2, QTableWidgetItem("Duration"))
-        self.hikes_table.setHorizontalHeaderItem(3, QTableWidgetItem("Total Ascent"))
-        self.hikes_table.setHorizontalHeaderItem(4, QTableWidgetItem("Total Descent"))
+        self.hikes_table.setHorizontalHeaderItem(3, QTableWidgetItem("Total Ascent (m)"))
+        self.hikes_table.setHorizontalHeaderItem(4, QTableWidgetItem("Total Descent (m)"))
         self.hikes_table.setHorizontalHeaderItem(5, QTableWidgetItem("Date"))
         self.hikes_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.hikes_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         self.hikes_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.hikes_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         self.hikes_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
-        #self.hikes_table.doubleClicked.connect(self.selected_hike)
+        self.hikes_table.doubleClicked.connect(self.selected_hike)
 
     def layouts(self):
         ########################
@@ -168,6 +168,16 @@ class Main(QMainWindow):
 
         mountain_id = mountain_list[0]
         self.display = DisplayMountain()
+        self.display.show()
+
+    def selected_hike(self):
+        global hike_id
+        hike_list = []
+        for i in range(0, 6):
+            hike_list.append(self.hikes_table.item(self.hikes_table.currentRow(), i).text())
+
+        hike_id = hike_list[0]
+        self.display = DisplayHike()
         self.display.show()
 
 
@@ -295,6 +305,126 @@ class DisplayMountain(QWidget):
                 self.close()
             except:
                 QMessageBox.warning(self, "Warning", "Mountain has not been deleted")
+
+
+class DisplayHike(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle(" Hike Details")
+        self.setWindowIcon(QIcon("icons/hiking.png"))
+        self.setGeometry(500, 95, 575, 800)
+        self.setFixedSize(self.size())
+        self.UI()
+        self.show()
+
+    def UI(self):
+        self.hike_details()
+        self.widgets()
+        self.layouts()
+
+    def hike_details(self):
+        global hike_id
+        query = "SELECT * FROM hike WHERE id = ?"
+        hike = cur.execute(query, (hike_id,)).fetchone()
+
+        self.hike_length = hike[1]
+        self.hike_duration = hike[2]
+        self.hike_ascent = hike[3]
+        self.hike_descent = hike[4]
+        self.hike_date = hike[5]
+
+    def widgets(self):
+        ##### Top Layout Widgets #####
+        self.hike_img = QLabel()
+        self.img = QPixmap("icons/hiking.png")
+        self.hike_img.setPixmap(self.img)
+        self.hike_img.setAlignment(Qt.AlignCenter)
+        self.title_text = QLabel("Display Hike")
+        self.title_text.setAlignment(Qt.AlignCenter)
+
+        # #### Bottom Layout Widgets #####
+        self.length_entry = QLineEdit()
+        self.length_entry.setText(str(self.hike_length))
+        self.duration_entry = QLineEdit()
+        self.duration_entry.setText(str(self.hike_duration))
+        self.ascent_entry = QLineEdit()
+        self.ascent_entry.setText(str(self.hike_ascent))
+        self.descent_entry = QLineEdit()
+        self.descent_entry.setText(str(self.hike_descent))
+        self.date_entry = QCalendarWidget()
+        self.date_entry.setGridVisible(True)
+        dc = parser.parse(self.hike_date)
+        self.date_entry.setSelectedDate(dc)
+        self.delete_btn = QPushButton("Delete")
+        self.delete_btn.clicked.connect(self.delete_hike)
+        self.update_btn = QPushButton("Update")
+        self.update_btn.clicked.connect(self.update_hike)
+
+    def layouts(self):
+        self.main_layout = QVBoxLayout()
+        self.top_layout = QVBoxLayout()
+        self.bottom_layout = QFormLayout()
+        self.top_frame = QFrame()
+        self.top_frame.setStyleSheet(style.top_frame_style())
+        self.bottom_frame = QFrame()
+        self.bottom_frame.setStyleSheet(style.bottom_frame_style())
+
+        ##### Add Widgets #####
+        self.top_layout.addWidget(self.title_text)
+        self.top_layout.addWidget(self.hike_img)
+        self.top_frame.setLayout(self.top_layout)
+        self.bottom_layout.addRow(QLabel("Length:"), self.length_entry)
+        self.bottom_layout.addRow(QLabel("Duration:"), self.duration_entry)
+        self.bottom_layout.addRow(QLabel("Ascent:"), self.ascent_entry)
+        self.bottom_layout.addRow(QLabel("Descent:"), self.descent_entry)
+        self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel(""), self.delete_btn)
+        self.bottom_layout.addRow(QLabel(""), self.update_btn)
+        self.bottom_frame.setLayout(self.bottom_layout)
+        self.main_layout.addWidget(self.top_frame)
+        self.main_layout.addWidget(self.bottom_frame)
+
+        self.setLayout(self.main_layout)
+
+    def update_hike(self):
+        global hike_id
+        length = self.length_entry.text()
+        duration = self.duration_entry.text()
+        ascent = self.ascent_entry.text()
+        descent = self.descent_entry.text()
+        date = self.date_entry.selectedDate().toString()
+
+        if length and duration and ascent and descent != "":
+            try:
+                length = float(length)
+                ascent = float(ascent)
+                descent = float(descent)
+                query = "UPDATE hike SET length = ?, duration = ?, ascent = ?, " \
+                        "descent = ?, date = ? WHERE id = ?"
+                cur.execute(query, (length, duration, ascent, descent, date, hike_id))
+                con.commit()
+                QMessageBox.information(self, "Info", "Hike has been updated")
+                self.close()
+            except Exception:
+                QMessageBox.warning(self, 'Error', 'Invalid entry, input must be a number')
+            except:
+                QMessageBox.warning(self, "Warning", "Hike has not been updated")
+        else:
+            QMessageBox.warning(self, "Warning", "Fields cannot be empty")
+
+    def delete_hike(self):
+        global hike_id
+        mbox = QMessageBox.question(self, "Warning", "Are you sure you want to delete this hike?",
+                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if mbox == QMessageBox.Yes:
+            try:
+                query = "DELETE FROM hike WHERE id = ?"
+                cur.execute(query, (hike_id,))
+                con.commit()
+                QMessageBox.information(self, "Info", "Hike has been deleted")
+                self.close()
+            except:
+                QMessageBox.warning(self, "Warning", "Hike has not been deleted")
 
 
 def main():
