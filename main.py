@@ -1,10 +1,11 @@
-import sys
+import sys, os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
 import add_mountain, add_hike, style
 from dateutil import parser
+from PIL import Image
 
 
 con = sqlite3.connect("mountains.db")
@@ -186,7 +187,7 @@ class DisplayMountain(QWidget):
         super().__init__()
         self.setWindowTitle(" Mountain Details")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(500, 95, 575, 885)
+        self.setGeometry(500, 75, 575, 925)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -207,14 +208,15 @@ class DisplayMountain(QWidget):
         self.mountain_long = mountain[4]
         self.mountain_lat = mountain[5]
         self.date_climbed = mountain[7]
+        self.mountain_photo = mountain[8]
 
     def widgets(self):
         ##### Top Layout Widgets #####
         self.mountain_img = QLabel()
-        self.img = QPixmap("icons/mountain.png")
+        self.img = QPixmap("photos/{}".format(self.mountain_photo))
         self.mountain_img.setPixmap(self.img)
         self.mountain_img.setAlignment(Qt.AlignCenter)
-        self.title_text = QLabel("Display Mountain")
+        self.title_text = QLabel(self.mountain_name)
         self.title_text.setAlignment(Qt.AlignCenter)
 
         # #### Bottom Layout Widgets #####
@@ -232,9 +234,11 @@ class DisplayMountain(QWidget):
         self.date_entry.setGridVisible(True)
         dc = parser.parse(self.date_climbed)
         self.date_entry.setSelectedDate(dc)
-        self.delete_btn = QPushButton("Delete")
+        self.upload_btn = QPushButton("Upload Photo")
+        self.upload_btn.clicked.connect(self.upload_img)
+        self.delete_btn = QPushButton("Delete Mountain")
         self.delete_btn.clicked.connect(self.delete_mountain)
-        self.update_btn = QPushButton("Update")
+        self.update_btn = QPushButton("Update Mountain")
         self.update_btn.clicked.connect(self.update_mountain)
 
     def layouts(self):
@@ -256,6 +260,7 @@ class DisplayMountain(QWidget):
         self.bottom_layout.addRow(QLabel("Longitude:"), self.longitude_entry)
         self.bottom_layout.addRow(QLabel("Latitude:"), self.latitude_entry)
         self.bottom_layout.addRow(QLabel("Climb Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel("Photo: "), self.upload_btn)
         self.bottom_layout.addRow(QLabel(""), self.delete_btn)
         self.bottom_layout.addRow(QLabel(""), self.update_btn)
         self.bottom_frame.setLayout(self.bottom_layout)
@@ -263,6 +268,15 @@ class DisplayMountain(QWidget):
         self.main_layout.addWidget(self.bottom_frame)
 
         self.setLayout(self.main_layout)
+
+    def upload_img(self):
+        size = (256, 256)
+        self.file_name, ok = QFileDialog.getOpenFileName(self, "Upload Image", "", "Image Files (*.jpg *.png)")
+        if ok:
+            self.mountain_photo = os.path.basename(self.file_name)
+            img = Image.open(self.file_name)
+            img = img.resize(size)
+            img.save("photos/{0}".format(self.mountain_photo))
 
     def update_mountain(self):
         global mountain_id
@@ -272,6 +286,7 @@ class DisplayMountain(QWidget):
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
         date = self.date_entry.selectedDate().toString()
+        default_image = self.mountain_photo
 
         if name and height and prominence and longitude and latitude != "":
             try:
@@ -280,8 +295,8 @@ class DisplayMountain(QWidget):
                 longitude = float(longitude)
                 latitude = float(latitude)
                 query = "UPDATE mountain SET name = ?, height = ?, prominence = ?, " \
-                        "longitude = ?, latitude = ?, date_climbed = ? WHERE id = ?"
-                cur.execute(query, (name, height, prominence, longitude, latitude, date, mountain_id))
+                        "longitude = ?, latitude = ?, date_climbed = ?, photo = ? WHERE id = ?"
+                cur.execute(query, (name, height, prominence, longitude, latitude, date, default_image, mountain_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been updated")
                 self.close()

@@ -1,10 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
-import sqlite3, style
+import sqlite3, style, os
+from PIL import Image
 
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
+
+default_img = "mountain.png"
 
 
 class AddMountain(QWidget):
@@ -12,7 +15,7 @@ class AddMountain(QWidget):
         super().__init__()
         self.setWindowTitle(" Add Mountain")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(500, 95, 575, 880)
+        self.setGeometry(500, 95, 575, 885)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -43,6 +46,8 @@ class AddMountain(QWidget):
         self.latitude_entry.setPlaceholderText("Enter latitude of mountain")
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
+        self.upload_btn = QPushButton("Upload")
+        self.upload_btn.clicked.connect(self.upload_img)
         self.submit_btn = QPushButton("Submit")
         self.submit_btn.clicked.connect(self.add_mountain)
 
@@ -68,6 +73,7 @@ class AddMountain(QWidget):
         self.bottom_layout.addRow(QLabel("Longitude: "), self.longitude_entry)
         self.bottom_layout.addRow(QLabel("Latitude: "), self.latitude_entry)
         self.bottom_layout.addRow(QLabel("Climb Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel("Photo: "), self.upload_btn)
         self.bottom_layout.addRow(QLabel(""), self.submit_btn)
         self.bottom_frame.setLayout(self.bottom_layout)
 
@@ -77,6 +83,7 @@ class AddMountain(QWidget):
         self.setLayout(self.main_layout)
 
     def add_mountain(self):
+        global default_img
         name = self.name_entry.text()
         height = self.height_entry.text()
         prominence = self.prom_entry.text()
@@ -90,8 +97,8 @@ class AddMountain(QWidget):
                 prominence = float(prominence)
                 longitude = float(longitude)
                 latitude = float(latitude)
-                query = "INSERT INTO 'mountain' (name, height, prominence, longitude, latitude, date_climbed) VALUES (?, ?, ?, ?, ?, ?)"
-                cur.execute(query, (name, height, prominence, longitude, latitude, date))
+                query = "INSERT INTO 'mountain' (name, height, prominence, longitude, latitude, date_climbed, photo) VALUES (?, ?, ?, ?, ?, ?, ?)"
+                cur.execute(query, (name, height, prominence, longitude, latitude, date, default_img))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been added")
                 self.name_entry.setText("")
@@ -99,11 +106,19 @@ class AddMountain(QWidget):
                 self.prom_entry.setText("")
                 self.latitude_entry.setText("")
                 self.longitude_entry.setText("")
-                # self.date_entry.setText("")
-                # con.close()
             except Exception:
                 QMessageBox.warning(self, 'Error', 'Invalid entry, input must be a number')
             except:
                 QMessageBox.warning(self, "Info", "Mountain has not been added")
         else:
             QMessageBox.warning(self, "Info", "Fields cannot be empty!")
+
+    def upload_img(self):
+        global default_img
+        size = (256, 256)
+        self.filename, ok = QFileDialog.getOpenFileName(self, "Upload Image", "", "Image Files (*.jpg *.png)")
+        if ok:
+            default_img = os.path.basename(self.filename)
+            img = Image.open(self.filename)
+            img = img.resize(size)
+            img.save("photos/{0}".format(default_img))
