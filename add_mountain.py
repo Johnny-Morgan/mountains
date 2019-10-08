@@ -44,6 +44,8 @@ class AddMountain(QWidget):
         self.longitude_entry.setPlaceholderText("Enter longitude of mountain")
         self.latitude_entry = QLineEdit()
         self.latitude_entry.setPlaceholderText("Enter latitude of mountain")
+        self.area_combo = QComboBox()
+        self.area_combo.addItems(["Dublin/Wicklow", "East Coast", "North Midlands", "Snowdonia"])
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         self.upload_btn = QPushButton("Upload")
@@ -72,6 +74,7 @@ class AddMountain(QWidget):
         self.bottom_layout.addRow(QLabel("Prominence: "), self.prom_entry)
         self.bottom_layout.addRow(QLabel("Longitude: "), self.longitude_entry)
         self.bottom_layout.addRow(QLabel("Latitude: "), self.latitude_entry)
+        self.bottom_layout.addRow(QLabel("Area: "), self.area_combo)
         self.bottom_layout.addRow(QLabel("Climb Date: "), self.date_entry)
         self.bottom_layout.addRow(QLabel("Photo: "), self.upload_btn)
         self.bottom_layout.addRow(QLabel(""), self.submit_btn)
@@ -89,6 +92,7 @@ class AddMountain(QWidget):
         prominence = self.prom_entry.text()
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
+        area = self.area_combo.currentText()
         date = self.date_entry.selectedDate().toString()
 
         if name and height and prominence and longitude and latitude != "":
@@ -97,8 +101,8 @@ class AddMountain(QWidget):
                 prominence = float(prominence)
                 longitude = float(longitude)
                 latitude = float(latitude)
-                query = "INSERT INTO 'mountain' (name, height, prominence, longitude, latitude, date_climbed, photo) VALUES (?, ?, ?, ?, ?, ?, ?)"
-                cur.execute(query, (name, height, prominence, longitude, latitude, date, default_img))
+                query = "INSERT INTO 'mountain' (name, height, prominence, longitude, latitude, area, date_climbed, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                cur.execute(query, (name, height, prominence, longitude, latitude, area, date, default_img))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been added")
                 self.name_entry.setText("")

@@ -65,7 +65,7 @@ class Main(QMainWindow):
         ##### Main Left Layout Widget #####
         self.mountains_table = QTableWidget()
         self.mountains_table.setSortingEnabled(True)
-        self.mountains_table.setColumnCount(7)
+        self.mountains_table.setColumnCount(8)
         self.mountains_table.setColumnHidden(0, True)
         self.mountains_table.setHorizontalHeaderItem(0, QTableWidgetItem("Mountain Id"))
         self.mountains_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
@@ -73,7 +73,8 @@ class Main(QMainWindow):
         self.mountains_table.setHorizontalHeaderItem(3, QTableWidgetItem("Prominence (m)"))
         self.mountains_table.setHorizontalHeaderItem(4, QTableWidgetItem("Longitude"))
         self.mountains_table.setHorizontalHeaderItem(5, QTableWidgetItem("Latitude"))
-        self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Date climbed"))
+        self.mountains_table.setHorizontalHeaderItem(6, QTableWidgetItem("Area"))
+        self.mountains_table.setHorizontalHeaderItem(7, QTableWidgetItem("Date Climbed"))
         self.mountains_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
         self.mountains_table.doubleClicked.connect(self.selected_mountain)
@@ -132,7 +133,7 @@ class Main(QMainWindow):
         for i in reversed(range(self.mountains_table.rowCount())):
             self.mountains_table.removeRow(i)
 
-        query = cur.execute("SELECT id, name, height, prominence, longitude, latitude, date_climbed FROM mountain")
+        query = cur.execute("SELECT id, name, height, prominence, longitude, latitude, area, date_climbed FROM mountain")
         for row_data in query:
             row_number = self.mountains_table.rowCount()
             self.mountains_table.insertRow(row_number)
@@ -164,7 +165,7 @@ class Main(QMainWindow):
     def selected_mountain(self):
         global mountain_id
         mountain_list = []
-        for i in range(0, 7):
+        for i in range(0, 8):
             mountain_list.append(self.mountains_table.item(self.mountains_table.currentRow(), i).text())
 
         mountain_id = mountain_list[0]
@@ -207,8 +208,9 @@ class DisplayMountain(QWidget):
         self.mountain_prom = mountain[3]
         self.mountain_long = mountain[4]
         self.mountain_lat = mountain[5]
-        self.date_climbed = mountain[7]
-        self.mountain_photo = mountain[8]
+        self.mountain_area = mountain[7]
+        self.date_climbed = mountain[8]
+        self.mountain_photo = mountain[9]
 
     def widgets(self):
         ##### Top Layout Widgets #####
@@ -230,6 +232,9 @@ class DisplayMountain(QWidget):
         self.longitude_entry.setText(str(self.mountain_long))
         self.latitude_entry = QLineEdit()
         self.latitude_entry.setText(str(self.mountain_lat))
+        self.area_combo = QComboBox()
+        self.area_combo.addItems(["Dublin/Wicklow", "East Coast", "North Midlands", "Snowdonia"])
+        self.area_combo.setCurrentText(self.mountain_area)
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         dc = parser.parse(self.date_climbed)
@@ -264,6 +269,7 @@ class DisplayMountain(QWidget):
         self.middle_left.addRow(QLabel("Prominence:"), self.prominence_entry)
         self.middle_left.addRow(QLabel("Longitude:"), self.longitude_entry)
         self.middle_left.addRow(QLabel("Latitude:"), self.latitude_entry)
+        self.middle_left.addRow(QLabel("Area:"), self.area_combo)
         self.middle_left.addRow(QLabel("Photo: "), self.upload_btn)
         self.bottom_layout.addWidget(self.update_btn)
         self.bottom_layout.addWidget(self.delete_btn)
@@ -295,6 +301,7 @@ class DisplayMountain(QWidget):
         prominence = self.prominence_entry.text()
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
+        area = self.area_combo.currentText()
         date = self.date_entry.selectedDate().toString()
         default_image = self.mountain_photo
 
@@ -305,8 +312,8 @@ class DisplayMountain(QWidget):
                 longitude = float(longitude)
                 latitude = float(latitude)
                 query = "UPDATE mountain SET name = ?, height = ?, prominence = ?, " \
-                        "longitude = ?, latitude = ?, date_climbed = ?, photo = ? WHERE id = ?"
-                cur.execute(query, (name, height, prominence, longitude, latitude, date, default_image, mountain_id))
+                        "longitude = ?, latitude = ?, area = ?, date_climbed = ?, photo = ? WHERE id = ?"
+                cur.execute(query, (name, height, prominence, longitude, latitude, area, date, default_image, mountain_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been updated")
                 self.close()
