@@ -30,6 +30,7 @@ class Main(QMainWindow):
         self.layouts()
         self.display_mountains()
         self.display_hikes()
+        self.get_statistics()
 
     def tool_bar(self):
         self.tb = self.addToolBar("Tool Bar")
@@ -55,6 +56,8 @@ class Main(QMainWindow):
         self.tabs.addTab(self.tab1, "Mountains")
         self.tab2 = QWidget()
         self.tabs.addTab(self.tab2, "Hikes")
+        self.tab3 = QWidget()
+        self.tabs.addTab(self.tab3, "Statistics")
 
 
     def widgets(self):
@@ -101,6 +104,17 @@ class Main(QMainWindow):
         self.hikes_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         self.hikes_table.doubleClicked.connect(self.selected_hike)
 
+        ########################
+        ##### Tab3 Widgets #####
+        ########################
+        self.total_hikes_label = QLabel()
+        self.total_length_label = QLabel()
+        self.total_ascent_label = QLabel()
+        self.total_descent_label = QLabel()
+        self.avg_length_label = QLabel()
+        self.avg_ascent_label = QLabel()
+        self.avg_descent_label = QLabel()
+
     def layouts(self):
         ########################
         ##### Tab1 layouts #####
@@ -127,6 +141,25 @@ class Main(QMainWindow):
         self.main_left_layout.addWidget(self.hikes_table)
         self.main_layout.addLayout(self.main_left_layout)
         self.tab2.setLayout(self.main_layout)
+
+        ########################
+        ##### Tab3 layouts #####
+        ########################
+        self.statistics_main_layout = QVBoxLayout()
+        self.statistics_layout = QFormLayout()
+        self.statistics_groupbox = QGroupBox("Statistics")
+        self.statistics_layout.addRow("Total Hikes: ", self.total_hikes_label)
+        self.statistics_layout.addRow("Total length: ", self.total_length_label)
+        self.statistics_layout.addRow("Total Ascent: ", self.total_ascent_label)
+        self.statistics_layout.addRow("Total Descent: ", self.total_descent_label)
+        self.statistics_layout.addRow("Average Length: ", self.avg_length_label)
+        self.statistics_layout.addRow("Average Ascent: ", self.avg_ascent_label)
+        self.statistics_layout.addRow("Average Descent: ", self.avg_descent_label)
+
+        self.statistics_groupbox.setLayout(self.statistics_layout)
+        self.statistics_groupbox.setFont(QFont("Arial", 14))
+        self.statistics_main_layout.addWidget(self.statistics_groupbox)
+        self.tab3.setLayout(self.statistics_main_layout)
 
     def display_mountains(self):
         self.mountains_table.setFont(QFont("Arial", 10))
@@ -181,6 +214,25 @@ class Main(QMainWindow):
         hike_id = hike_list[0]
         self.display = DisplayHike()
         self.display.show()
+
+    def get_statistics(self):
+        count_hikes = cur.execute("SELECT count(id) FROM hike").fetchall()
+        count_length = cur.execute("SELECT SUM(length) FROM hike").fetchall()
+        count_ascent = cur.execute("SELECT SUM(ascent) FROM hike").fetchall()
+        count_descent = cur.execute("SELECT SUM(descent) FROM hike").fetchall()
+        print(count_hikes)
+        count_hikes = count_hikes[0][0]
+        count_length = count_length[0][0]
+        count_ascent = count_ascent[0][0]
+        count_descent = count_descent[0][0]
+
+        self.total_hikes_label.setText(str(count_hikes))
+        self.total_length_label.setText(str(count_length) + "m")
+        self.total_ascent_label.setText(str(count_ascent) + "m")
+        self.total_descent_label.setText(str(count_descent) + "m")
+        self.avg_length_label.setText(str(count_length / count_hikes) + "m")
+        self.avg_ascent_label.setText(str(count_ascent / count_hikes) + "m")
+        self.avg_descent_label.setText(str(count_descent / count_hikes) + "m")
 
 
 class DisplayMountain(QWidget):
