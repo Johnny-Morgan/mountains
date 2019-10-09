@@ -109,11 +109,15 @@ class Main(QMainWindow):
         ########################
         self.total_hikes_label = QLabel()
         self.total_length_label = QLabel()
+        self.total_time_label = QLabel()
         self.total_ascent_label = QLabel()
         self.total_descent_label = QLabel()
         self.avg_length_label = QLabel()
+        self.avg_time_label = QLabel()
         self.avg_ascent_label = QLabel()
         self.avg_descent_label = QLabel()
+        self.total_mountains_label = QLabel()
+
 
     def layouts(self):
         ########################
@@ -149,12 +153,15 @@ class Main(QMainWindow):
         self.statistics_layout = QFormLayout()
         self.statistics_groupbox = QGroupBox("Statistics")
         self.statistics_layout.addRow("Total Hikes: ", self.total_hikes_label)
-        self.statistics_layout.addRow("Total length: ", self.total_length_label)
+        self.statistics_layout.addRow("Total Length: ", self.total_length_label)
+        self.statistics_layout.addRow("Total Time: ", self.total_time_label)
         self.statistics_layout.addRow("Total Ascent: ", self.total_ascent_label)
         self.statistics_layout.addRow("Total Descent: ", self.total_descent_label)
+        self.statistics_layout.addRow("Average Time: ", self.avg_time_label)
         self.statistics_layout.addRow("Average Length: ", self.avg_length_label)
         self.statistics_layout.addRow("Average Ascent: ", self.avg_ascent_label)
         self.statistics_layout.addRow("Average Descent: ", self.avg_descent_label)
+        self.statistics_layout.addRow("Total Mountains: ", self.total_mountains_label)
 
         self.statistics_groupbox.setLayout(self.statistics_layout)
         self.statistics_groupbox.setFont(QFont("Arial", 14))
@@ -220,19 +227,43 @@ class Main(QMainWindow):
         count_length = cur.execute("SELECT SUM(length) FROM hike").fetchall()
         count_ascent = cur.execute("SELECT SUM(ascent) FROM hike").fetchall()
         count_descent = cur.execute("SELECT SUM(descent) FROM hike").fetchall()
-        print(count_hikes)
+        count_mountains = cur.execute("SELECT count(id) FROM mountain").fetchall()
+        times = cur.execute("SELECT duration FROM hike").fetchall()
+
         count_hikes = count_hikes[0][0]
         count_length = count_length[0][0]
         count_ascent = count_ascent[0][0]
         count_descent = count_descent[0][0]
+        count_mountains = count_mountains[0][0]
+
+        seconds = 0
+        minutes = 0
+        hours = 0
+        # Calculate total time
+        for time in times:
+            seconds += int(time[0].split(":")[2])
+            minutes += int(time[0].split(":")[1])
+            hours += int(time[0].split(":")[0])
+        minutes += seconds // 60
+        seconds %= 60
+        hours += minutes // 60
+        minutes %= 60
+
+        # Calculate average time
+        total_seconds = seconds + minutes * 60 + hours * 3600
+        average_seconds = total_seconds / count_hikes
 
         self.total_hikes_label.setText(str(count_hikes))
-        self.total_length_label.setText(str(count_length) + "m")
+        self.total_length_label.setText(str(count_length) + "km")
+        self.total_time_label.setText("%d:%d:%d" % (hours, minutes, seconds))
         self.total_ascent_label.setText(str(count_ascent) + "m")
         self.total_descent_label.setText(str(count_descent) + "m")
+        self.avg_time_label.setText(str(count_length / count_hikes) + "m")
         self.avg_length_label.setText(str(count_length / count_hikes) + "m")
-        self.avg_ascent_label.setText(str(count_ascent / count_hikes) + "m")
-        self.avg_descent_label.setText(str(count_descent / count_hikes) + "m")
+        self.avg_time_label.setText("{0:.2f} hours".format(average_seconds/ 3600))
+        self.avg_ascent_label.setText("{0:.2f}m".format(count_ascent / count_hikes))
+        self.avg_descent_label.setText("{0:.2f}m".format(count_descent / count_hikes))
+        self.total_mountains_label.setText(str(count_mountains))
 
 
 class DisplayMountain(QWidget):
