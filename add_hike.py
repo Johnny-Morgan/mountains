@@ -12,7 +12,7 @@ class AddHike(QWidget):
         super().__init__()
         self.setWindowTitle(" Add Hike")
         self.setWindowIcon(QIcon("icons/hiking.png"))
-        self.setGeometry(500, 95, 575, 715)
+        self.setGeometry(500, 95, 575, 827)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -39,6 +39,8 @@ class AddHike(QWidget):
         self.ascent_entry.setPlaceholderText("Enter total ascent")
         self.descent_entry = QLineEdit()
         self.descent_entry.setPlaceholderText("Enter total descent")
+        self.note_entry = QTextEdit()
+        self.note_entry.insertPlainText("Notes on hike go here.")
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         self.submit_btn = QPushButton("Submit")
@@ -64,6 +66,7 @@ class AddHike(QWidget):
         self.bottom_layout.addRow(QLabel("Duration: "), self.duration_entry)
         self.bottom_layout.addRow(QLabel("Total ascent: "), self.ascent_entry)
         self.bottom_layout.addRow(QLabel("Total descent: "), self.descent_entry)
+        self.bottom_layout.addRow(QLabel("Notes: "), self.note_entry)
         self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
         self.bottom_layout.addRow(QLabel(""), self.submit_btn)
         self.bottom_frame.setLayout(self.bottom_layout)
@@ -77,7 +80,8 @@ class AddHike(QWidget):
         length = self.length_entry.text()
         duration = self.duration_entry.text()
         ascent = self.ascent_entry.text()
-        descent= self.descent_entry.text()
+        descent = self.descent_entry.text()
+        note = self.note_entry.toPlainText()
         date = self.date_entry.selectedDate().toString()
 
         if length and duration and ascent and descent != "":
@@ -85,14 +89,15 @@ class AddHike(QWidget):
                 length = float(length)
                 ascent = float(ascent)
                 descent = float(descent)
-                query = "INSERT INTO 'hike' (length, duration, ascent, descent, date) VALUES (?, ?, ?, ?, ?)"
-                cur.execute(query, (length, duration, ascent, descent, date))
+                query = "INSERT INTO 'hike' (length, duration, ascent, descent, note, date) VALUES (?, ?, ?, ?, ?,?)"
+                cur.execute(query, (length, duration, ascent, descent, note, date))
                 con.commit()
                 QMessageBox.information(self, "Info", "Hike has been added")
                 self.length_entry.setText("")
                 self.duration_entry.setText("")
                 self.ascent_entry.setText("")
                 self.descent_entry.setText("")
+                self.note_entry.setText("Notes on hike go here.")
             except Exception:
                 QMessageBox.warning(self, 'Error', 'Invalid entry, input must be a number')
             except:

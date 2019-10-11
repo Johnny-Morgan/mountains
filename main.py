@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 import sqlite3
-import add_mountain, add_hike, style
+import add_mountain, add_hike, style, map1
 from dateutil import parser
 from PIL import Image
 
@@ -49,6 +49,12 @@ class Main(QMainWindow):
         self.add_hike.triggered.connect(self.func_add_hike)
         self.tb.addSeparator()
 
+        ##### Generate Map #########
+        self.generate_map = QAction(QIcon("icons/map.png"), "Generate Map", self)
+        self.tb.addAction(self.generate_map)
+        self.generate_map.triggered.connect(self.func_generate_map)
+        self.tb.addSeparator()
+
     def tab_widget(self):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
@@ -89,7 +95,7 @@ class Main(QMainWindow):
         ##### Main Left Layout Widget #####
         self.hikes_table = QTableWidget()
         self.hikes_table.setSortingEnabled(True)
-        self.hikes_table.setColumnCount(6)
+        self.hikes_table.setColumnCount(7)
         self.hikes_table.setColumnHidden(0, True)
         self.hikes_table.setHorizontalHeaderItem(0, QTableWidgetItem("Hike Id"))
         self.hikes_table.setHorizontalHeaderItem(1, QTableWidgetItem("Length (km)"))
@@ -97,11 +103,11 @@ class Main(QMainWindow):
         self.hikes_table.setHorizontalHeaderItem(3, QTableWidgetItem("Total Ascent (m)"))
         self.hikes_table.setHorizontalHeaderItem(4, QTableWidgetItem("Total Descent (m)"))
         self.hikes_table.setHorizontalHeaderItem(5, QTableWidgetItem("Date"))
-        self.hikes_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.hikes_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-        self.hikes_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
-        self.hikes_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
-        self.hikes_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+        self.hikes_table.setHorizontalHeaderItem(6, QTableWidgetItem("Notes"))
+        self.hikes_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeToContents)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeToContents)
+        self.hikes_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         self.hikes_table.doubleClicked.connect(self.selected_hike)
 
         ########################
@@ -187,7 +193,7 @@ class Main(QMainWindow):
         for i in reversed(range(self.hikes_table.rowCount())):
             self.hikes_table.removeRow(i)
 
-        query = cur.execute("SELECT id, length, duration, ascent, descent, date FROM hike")
+        query = cur.execute("SELECT id, length, duration, ascent, descent, date, note FROM hike")
         for row_data in query:
             row_number = self.hikes_table.rowCount()
             self.hikes_table.insertRow(row_number)
@@ -201,6 +207,9 @@ class Main(QMainWindow):
 
     def func_add_hike(self):
         self.new_hike = add_hike.AddHike()
+
+    def func_generate_map(self):
+        map1.generate_map()
 
     def selected_mountain(self):
         global mountain_id
@@ -259,7 +268,7 @@ class Main(QMainWindow):
         self.total_ascent_label.setText(str(count_ascent) + "m")
         self.total_descent_label.setText(str(count_descent) + "m")
         self.avg_time_label.setText(str(count_length / count_hikes) + "m")
-        self.avg_length_label.setText(str(count_length / count_hikes) + "m")
+        self.avg_length_label.setText("{0:.2f}m".format(count_length / count_hikes))
         self.avg_time_label.setText("{0:.2f} hours".format(average_seconds/ 3600))
         self.avg_ascent_label.setText("{0:.2f}m".format(count_ascent / count_hikes))
         self.avg_descent_label.setText("{0:.2f}m".format(count_descent / count_hikes))
@@ -427,7 +436,7 @@ class DisplayHike(QWidget):
         super().__init__()
         self.setWindowTitle(" Hike Details")
         self.setWindowIcon(QIcon("icons/hiking.png"))
-        self.setGeometry(500, 95, 575, 800)
+        self.setGeometry(500, 95, 575, 835)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -447,6 +456,7 @@ class DisplayHike(QWidget):
         self.hike_ascent = hike[3]
         self.hike_descent = hike[4]
         self.hike_date = hike[5]
+        self.hike_notes = hike[6]
 
     def widgets(self):
         ##### Top Layout Widgets #####
@@ -466,6 +476,8 @@ class DisplayHike(QWidget):
         self.ascent_entry.setText(str(self.hike_ascent))
         self.descent_entry = QLineEdit()
         self.descent_entry.setText(str(self.hike_descent))
+        self.notes_entry = QTextEdit()
+        self.notes_entry.setText(self.hike_notes)
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         dc = parser.parse(self.hike_date)
@@ -492,6 +504,7 @@ class DisplayHike(QWidget):
         self.bottom_layout.addRow(QLabel("Duration:"), self.duration_entry)
         self.bottom_layout.addRow(QLabel("Ascent:"), self.ascent_entry)
         self.bottom_layout.addRow(QLabel("Descent:"), self.descent_entry)
+        self.bottom_layout.addRow(QLabel("Notes:"), self.notes_entry)
         self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
         self.bottom_layout.addRow(QLabel(""), self.delete_btn)
         self.bottom_layout.addRow(QLabel(""), self.update_btn)
@@ -507,6 +520,7 @@ class DisplayHike(QWidget):
         duration = self.duration_entry.text()
         ascent = self.ascent_entry.text()
         descent = self.descent_entry.text()
+        notes = self.notes_entry.toPlainText()
         date = self.date_entry.selectedDate().toString()
 
         if length and duration and ascent and descent != "":
@@ -515,8 +529,8 @@ class DisplayHike(QWidget):
                 ascent = float(ascent)
                 descent = float(descent)
                 query = "UPDATE hike SET length = ?, duration = ?, ascent = ?, " \
-                        "descent = ?, date = ? WHERE id = ?"
-                cur.execute(query, (length, duration, ascent, descent, date, hike_id))
+                        "descent = ?, date = ?, note = ? WHERE id = ?"
+                cur.execute(query, (length, duration, ascent, descent, date, notes, hike_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Hike has been updated")
                 self.close()
