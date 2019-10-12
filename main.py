@@ -37,19 +37,19 @@ class Main(QMainWindow):
         self.tb.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
 
         ##### Toolbar Buttons #####
-        ##### Add Mountain #########
+        ##### Add Mountain ########
         self.add_mountain = QAction(QIcon("icons/mountain.png"), "Add Mountain", self)
         self.tb.addAction(self.add_mountain)
         self.add_mountain.triggered.connect(self.func_add_mountain)
         self.tb.addSeparator()
 
-        ##### Add Hike #########
+        ##### Add Hike #####
         self.add_hike = QAction(QIcon("icons/hiking.png"), "Add Hike", self)
         self.tb.addAction(self.add_hike)
         self.add_hike.triggered.connect(self.func_add_hike)
         self.tb.addSeparator()
 
-        ##### Generate Map #########
+        ##### Generate Map #####
         self.generate_map = QAction(QIcon("icons/map.png"), "Generate Map", self)
         self.tb.addAction(self.generate_map)
         self.generate_map.triggered.connect(self.func_generate_map)
@@ -64,7 +64,6 @@ class Main(QMainWindow):
         self.tabs.addTab(self.tab2, "Hikes")
         self.tab3 = QWidget()
         self.tabs.addTab(self.tab3, "Statistics")
-
 
     def widgets(self):
         ########################
@@ -123,7 +122,11 @@ class Main(QMainWindow):
         self.avg_ascent_label = QLabel()
         self.avg_descent_label = QLabel()
         self.total_mountains_label = QLabel()
-
+        self.total_hills_label = QLabel()
+        self.dub_wick_label = QLabel()
+        self.east_coast_label = QLabel()
+        self.north_mid_label = QLabel()
+        self.snowdonia_label = QLabel()
 
     def layouts(self):
         ########################
@@ -156,20 +159,33 @@ class Main(QMainWindow):
         ##### Tab3 layouts #####
         ########################
         self.statistics_main_layout = QVBoxLayout()
-        self.statistics_layout = QFormLayout()
+        self.statistics_left_layout = QFormLayout()
+        self.statistics_right_layout = QFormLayout()
+        self.main = QHBoxLayout()
+        self.main.addLayout(self.statistics_left_layout)
+        self.main.addLayout(self.statistics_right_layout)
         self.statistics_groupbox = QGroupBox("Statistics")
-        self.statistics_layout.addRow("Total Hikes: ", self.total_hikes_label)
-        self.statistics_layout.addRow("Total Length: ", self.total_length_label)
-        self.statistics_layout.addRow("Total Time: ", self.total_time_label)
-        self.statistics_layout.addRow("Total Ascent: ", self.total_ascent_label)
-        self.statistics_layout.addRow("Total Descent: ", self.total_descent_label)
-        self.statistics_layout.addRow("Average Time: ", self.avg_time_label)
-        self.statistics_layout.addRow("Average Length: ", self.avg_length_label)
-        self.statistics_layout.addRow("Average Ascent: ", self.avg_ascent_label)
-        self.statistics_layout.addRow("Average Descent: ", self.avg_descent_label)
-        self.statistics_layout.addRow("Total Mountains: ", self.total_mountains_label)
+        self.statistics_right_layout.addRow(QLabel("\nHikes:"))
+        self.statistics_right_layout.addRow("\nTotal Hikes: ", self.total_hikes_label)
+        self.statistics_right_layout.addRow("Total Length: ", self.total_length_label)
+        self.statistics_right_layout.addRow("Total Time: ", self.total_time_label)
+        self.statistics_right_layout.addRow("Total Ascent: ", self.total_ascent_label)
+        self.statistics_right_layout.addRow("Total Descent: ", self.total_descent_label)
+        self.statistics_right_layout.addRow("Average Time: ", self.avg_time_label)
+        self.statistics_right_layout.addRow("Average Length: ", self.avg_length_label)
+        self.statistics_right_layout.addRow("Average Ascent: ", self.avg_ascent_label)
+        self.statistics_right_layout.addRow("Average Descent: ", self.avg_descent_label)
 
-        self.statistics_groupbox.setLayout(self.statistics_layout)
+        self.statistics_left_layout.addRow(QLabel("\nMountains:"))
+        self.statistics_left_layout.addRow("\nTotal Mountains: ", self.total_mountains_label)
+        self.statistics_left_layout.addRow("Total Hills (<500m): ", self.total_hills_label)
+        self.statistics_left_layout.addRow(QLabel("Areas:"))
+        self.statistics_left_layout.addRow("    Dublin/Wicklow:", self.dub_wick_label)
+        self.statistics_left_layout.addRow("    East Coast:", self.east_coast_label)
+        self.statistics_left_layout.addRow("    North Midlands:", self.north_mid_label)
+        self.statistics_left_layout.addRow("    Snowdonia:", self.snowdonia_label)
+
+        self.statistics_groupbox.setLayout(self.main)
         self.statistics_groupbox.setFont(QFont("Arial", 14))
         self.statistics_main_layout.addWidget(self.statistics_groupbox)
         self.tab3.setLayout(self.statistics_main_layout)
@@ -236,14 +252,24 @@ class Main(QMainWindow):
         count_length = cur.execute("SELECT SUM(length) FROM hike").fetchall()
         count_ascent = cur.execute("SELECT SUM(ascent) FROM hike").fetchall()
         count_descent = cur.execute("SELECT SUM(descent) FROM hike").fetchall()
-        count_mountains = cur.execute("SELECT count(id) FROM mountain").fetchall()
+        count_mountains = cur.execute("SELECT count(id) FROM mountain WHERE height >= 500").fetchall()
+        count_hills = cur.execute("SELECT count(id) FROM mountain WHERE height < 500").fetchall()
         times = cur.execute("SELECT duration FROM hike").fetchall()
+        count_dub_wick = cur.execute("SELECT COUNT(area) FROM mountain WHERE area = 'Dublin/Wicklow'").fetchall()
+        count_east_coast = cur.execute("SELECT COUNT(area) FROM mountain WHERE area = 'East Coast'").fetchall()
+        count_north_mid = cur.execute("SELECT COUNT(area) FROM mountain WHERE area = 'North Midlands'").fetchall()
+        count_snowdonia = cur.execute("SELECT COUNT(area) FROM mountain WHERE area = 'Snowdonia'").fetchall()
 
         count_hikes = count_hikes[0][0]
         count_length = count_length[0][0]
         count_ascent = count_ascent[0][0]
         count_descent = count_descent[0][0]
         count_mountains = count_mountains[0][0]
+        count_hills = count_hills[0][0]
+        count_dub_wick = count_dub_wick[0][0]
+        count_east_coast = count_east_coast[0][0]
+        count_north_mid = count_north_mid[0][0]
+        count_snowdonia = count_snowdonia[0][0]
 
         seconds = 0
         minutes = 0
@@ -269,10 +295,15 @@ class Main(QMainWindow):
         self.total_descent_label.setText(str(count_descent) + "m")
         self.avg_time_label.setText(str(count_length / count_hikes) + "m")
         self.avg_length_label.setText("{0:.2f}m".format(count_length / count_hikes))
-        self.avg_time_label.setText("{0:.2f} hours".format(average_seconds/ 3600))
+        self.avg_time_label.setText("{0:.2f} hours".format(average_seconds / 3600))
         self.avg_ascent_label.setText("{0:.2f}m".format(count_ascent / count_hikes))
         self.avg_descent_label.setText("{0:.2f}m".format(count_descent / count_hikes))
         self.total_mountains_label.setText(str(count_mountains))
+        self.total_hills_label.setText(str(count_hills))
+        self.dub_wick_label.setText(str(count_dub_wick))
+        self.east_coast_label.setText(str(count_east_coast))
+        self.north_mid_label.setText(str(count_north_mid))
+        self.snowdonia_label.setText(str(count_snowdonia))
 
 
 class DisplayMountain(QWidget):
