@@ -1,10 +1,13 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
-import sqlite3, style
+import sqlite3, style, os
+from PIL import Image
 
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
+
+default_img = "hiking.png"
 
 
 class AddHike(QWidget):
@@ -40,9 +43,12 @@ class AddHike(QWidget):
         self.descent_entry = QLineEdit()
         self.descent_entry.setPlaceholderText("Enter total descent")
         self.note_entry = QTextEdit()
-        self.note_entry.insertPlainText("Notes on hike go here.")
+        self.note_entry.setPlaceholderText("Notes on hike go here.")
+        self.note_entry.setStyleSheet(style.notes_style())
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
+        self.upload_btn = QPushButton("Upload")
+        self.upload_btn.clicked.connect(self.upload_img)
         self.submit_btn = QPushButton("Submit")
         self.submit_btn.clicked.connect(self.add_hike)
 
@@ -68,6 +74,7 @@ class AddHike(QWidget):
         self.bottom_layout.addRow(QLabel("Total descent: "), self.descent_entry)
         self.bottom_layout.addRow(QLabel("Notes: "), self.note_entry)
         self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
+        self.bottom_layout.addRow(QLabel("Image: "), self.upload_btn)
         self.bottom_layout.addRow(QLabel(""), self.submit_btn)
         self.bottom_frame.setLayout(self.bottom_layout)
 
@@ -89,8 +96,8 @@ class AddHike(QWidget):
                 length = float(length)
                 ascent = float(ascent)
                 descent = float(descent)
-                query = "INSERT INTO 'hike' (length, duration, ascent, descent, note, date) VALUES (?, ?, ?, ?, ?,?)"
-                cur.execute(query, (length, duration, ascent, descent, note, date))
+                query = "INSERT INTO 'hike' (length, duration, ascent, descent, note, date, image) VALUES (?, ?, ?, ?, ?, ?, ?)"
+                cur.execute(query, (length, duration, ascent, descent, note, date, default_img))
                 con.commit()
                 QMessageBox.information(self, "Info", "Hike has been added")
                 self.length_entry.setText("")
@@ -104,3 +111,13 @@ class AddHike(QWidget):
                 QMessageBox.warning(self, "Info", "Hike has not been added")
         else:
             QMessageBox.warning(self, "Info", "Fields cannot be empty!")
+
+    def upload_img(self):
+        global default_img
+        size = (512, 512)
+        self.filename, ok = QFileDialog.getOpenFileName(self, "Upload Image", "", "Image Files (*.jpg *.png)")
+        if ok:
+            default_img = os.path.basename(self.filename)
+            img = Image.open(self.filename)
+            img = img.resize(size)
+            img.save("images/{0}".format(default_img))

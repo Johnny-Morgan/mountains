@@ -467,7 +467,7 @@ class DisplayHike(QWidget):
         super().__init__()
         self.setWindowTitle(" Hike Details")
         self.setWindowIcon(QIcon("icons/hiking.png"))
-        self.setGeometry(500, 95, 575, 835)
+        self.setGeometry(400, 175, 1000, 700)
         self.setFixedSize(self.size())
         self.UI()
         self.show()
@@ -488,11 +488,12 @@ class DisplayHike(QWidget):
         self.hike_descent = hike[4]
         self.hike_date = hike[5]
         self.hike_notes = hike[6]
+        self.hike_image = hike[7]
 
     def widgets(self):
         ##### Top Layout Widgets #####
         self.hike_img = QLabel()
-        self.img = QPixmap("icons/hiking.png")
+        self.img = QPixmap("images/{}".format(self.hike_image))
         self.hike_img.setPixmap(self.img)
         self.hike_img.setAlignment(Qt.AlignCenter)
         self.title_text = QLabel("Display Hike")
@@ -509,10 +510,13 @@ class DisplayHike(QWidget):
         self.descent_entry.setText(str(self.hike_descent))
         self.notes_entry = QTextEdit()
         self.notes_entry.setText(self.hike_notes)
+        self.notes_entry.setStyleSheet(style.notes_style())
         self.date_entry = QCalendarWidget()
         self.date_entry.setGridVisible(True)
         dc = parser.parse(self.hike_date)
         self.date_entry.setSelectedDate(dc)
+        self.upload_btn = QPushButton("Upload Image")
+        self.upload_btn.clicked.connect(self.upload_img)
         self.delete_btn = QPushButton("Delete")
         self.delete_btn.clicked.connect(self.delete_hike)
         self.update_btn = QPushButton("Update")
@@ -521,9 +525,14 @@ class DisplayHike(QWidget):
     def layouts(self):
         self.main_layout = QVBoxLayout()
         self.top_layout = QVBoxLayout()
-        self.bottom_layout = QFormLayout()
+        self.middle_layout = QHBoxLayout()
+        self.middle_left = QFormLayout()
+        self.middle_right = QFormLayout()
+        self.bottom_layout = QHBoxLayout()
         self.top_frame = QFrame()
         self.top_frame.setStyleSheet(style.top_frame_style())
+        self.middle_frame = QFrame()
+        self.middle_frame.setStyleSheet(style.bottom_frame_style())
         self.bottom_frame = QFrame()
         self.bottom_frame.setStyleSheet(style.bottom_frame_style())
 
@@ -531,19 +540,34 @@ class DisplayHike(QWidget):
         self.top_layout.addWidget(self.title_text)
         self.top_layout.addWidget(self.hike_img)
         self.top_frame.setLayout(self.top_layout)
-        self.bottom_layout.addRow(QLabel("Length:"), self.length_entry)
-        self.bottom_layout.addRow(QLabel("Duration:"), self.duration_entry)
-        self.bottom_layout.addRow(QLabel("Ascent:"), self.ascent_entry)
-        self.bottom_layout.addRow(QLabel("Descent:"), self.descent_entry)
-        self.bottom_layout.addRow(QLabel("Notes:"), self.notes_entry)
-        self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
-        self.bottom_layout.addRow(QLabel(""), self.delete_btn)
-        self.bottom_layout.addRow(QLabel(""), self.update_btn)
+        self.middle_left.addRow(QLabel("Length:"), self.length_entry)
+        self.middle_left.addRow(QLabel("Duration:"), self.duration_entry)
+        self.middle_left.addRow(QLabel("Ascent:"), self.ascent_entry)
+        self.middle_left.addRow(QLabel("Descent:"), self.descent_entry)
+        self.middle_left.addRow(QLabel("Notes:"), self.notes_entry)
+        self.middle_right.addRow(QLabel("Hike Date: "), self.date_entry)
+        self.middle_left.addRow(QLabel("Image: "), self.upload_btn)
+        self.bottom_layout.addWidget(self.update_btn)
+        self.bottom_layout.addWidget(self.delete_btn)
+
+        self.middle_layout.addLayout(self.middle_left, 65)
+        self.middle_layout.addLayout(self.middle_right, 35)
+        self.middle_frame.setLayout(self.middle_layout)
         self.bottom_frame.setLayout(self.bottom_layout)
         self.main_layout.addWidget(self.top_frame)
+        self.main_layout.addWidget(self.middle_frame)
         self.main_layout.addWidget(self.bottom_frame)
 
         self.setLayout(self.main_layout)
+
+    def upload_img(self):
+        size = (512, 512)
+        self.file_name, ok = QFileDialog.getOpenFileName(self, "Upload Image", "", "Image Files (*.jpg *.png)")
+        if ok:
+            self.hike_image = os.path.basename(self.file_name)
+            img = Image.open(self.file_name)
+            img = img.resize(size)
+            img.save("images/{0}".format(self.hike_image))
 
     def update_hike(self):
         global hike_id
@@ -553,6 +577,7 @@ class DisplayHike(QWidget):
         descent = self.descent_entry.text()
         notes = self.notes_entry.toPlainText()
         date = self.date_entry.selectedDate().toString()
+        default_image = self.hike_image
 
         if length and duration and ascent and descent != "":
             try:
@@ -560,8 +585,8 @@ class DisplayHike(QWidget):
                 ascent = float(ascent)
                 descent = float(descent)
                 query = "UPDATE hike SET length = ?, duration = ?, ascent = ?, " \
-                        "descent = ?, date = ?, note = ? WHERE id = ?"
-                cur.execute(query, (length, duration, ascent, descent, date, notes, hike_id))
+                        "descent = ?, date = ?, note = ?, image = ? WHERE id = ?"
+                cur.execute(query, (length, duration, ascent, descent, date, notes, default_image, hike_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Hike has been updated")
                 self.close()
