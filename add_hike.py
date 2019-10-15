@@ -37,7 +37,7 @@ class AddHike(QWidget):
         self.length_entry = QLineEdit()
         self.length_entry.setPlaceholderText("Enter length of hike")
         self.duration_entry = QLineEdit()
-        self.duration_entry.setPlaceholderText("Enter duration of hike")
+        self.duration_entry.setPlaceholderText("hh:mm:ss")
         self.ascent_entry = QLineEdit()
         self.ascent_entry.setPlaceholderText("Enter total ascent")
         self.descent_entry = QLineEdit()
@@ -68,10 +68,10 @@ class AddHike(QWidget):
         self.top_frame.setLayout(self.top_layout)
 
         ##### Bottom Layout Widgets #####
-        self.bottom_layout.addRow(QLabel("Length: "), self.length_entry)
+        self.bottom_layout.addRow(QLabel("Length (km): "), self.length_entry)
         self.bottom_layout.addRow(QLabel("Duration: "), self.duration_entry)
-        self.bottom_layout.addRow(QLabel("Total ascent: "), self.ascent_entry)
-        self.bottom_layout.addRow(QLabel("Total descent: "), self.descent_entry)
+        self.bottom_layout.addRow(QLabel("Total ascent (m): "), self.ascent_entry)
+        self.bottom_layout.addRow(QLabel("Total descent (m): "), self.descent_entry)
         self.bottom_layout.addRow(QLabel("Notes: "), self.note_entry)
         self.bottom_layout.addRow(QLabel("Hike Date: "), self.date_entry)
         self.bottom_layout.addRow(QLabel("Image: "), self.upload_btn)

@@ -41,9 +41,9 @@ class AddMountain(QWidget):
         self.prom_entry = QLineEdit()
         self.prom_entry.setPlaceholderText("Enter prominence of mountain")
         self.longitude_entry = QLineEdit()
-        self.longitude_entry.setPlaceholderText("Enter longitude of mountain")
+        self.longitude_entry.setPlaceholderText("Enter longitude coordinate")
         self.latitude_entry = QLineEdit()
-        self.latitude_entry.setPlaceholderText("Enter latitude of mountain")
+        self.latitude_entry.setPlaceholderText("Enter latitude coordinate")
         self.area_combo = QComboBox()
         self.area_combo.addItems(["Dublin/Wicklow", "East Coast", "North Midlands", "Snowdonia"])
         self.date_entry = QCalendarWidget()
@@ -70,8 +70,8 @@ class AddMountain(QWidget):
 
         ##### Bottom Layout Widgets #####
         self.bottom_layout.addRow(QLabel("Name: "), self.name_entry)
-        self.bottom_layout.addRow(QLabel("Height: "), self.height_entry)
-        self.bottom_layout.addRow(QLabel("Prominence: "), self.prom_entry)
+        self.bottom_layout.addRow(QLabel("Height (m): "), self.height_entry)
+        self.bottom_layout.addRow(QLabel("Prominence (m): "), self.prom_entry)
         self.bottom_layout.addRow(QLabel("Longitude: "), self.longitude_entry)
         self.bottom_layout.addRow(QLabel("Latitude: "), self.latitude_entry)
         self.bottom_layout.addRow(QLabel("Area: "), self.area_combo)
