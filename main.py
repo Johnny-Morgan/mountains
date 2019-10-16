@@ -57,6 +57,8 @@ class Main(QMainWindow):
 
     def tab_widget(self):
         self.tabs = QTabWidget()
+        self.tabs.blockSignals(True)
+        self.tabs.currentChanged.connect(self.tab_changed)
         self.setCentralWidget(self.tabs)
         self.tab1 = QWidget()
         self.tabs.addTab(self.tab1, "Mountains")
@@ -191,6 +193,7 @@ class Main(QMainWindow):
         self.statistics_groupbox.setFont(QFont("Arial", 14))
         self.statistics_main_layout.addWidget(self.statistics_groupbox)
         self.tab3.setLayout(self.statistics_main_layout)
+        self.tabs.blockSignals(False)
 
     def display_mountains(self):
         self.mountains_table.setFont(QFont("Arial", 10))
@@ -307,6 +310,11 @@ class Main(QMainWindow):
         self.east_coast_label.setText(str(count_east_coast))
         self.north_mid_label.setText(str(count_north_mid))
         self.snowdonia_label.setText(str(count_snowdonia))
+
+    def tab_changed(self):
+        self.get_statistics()
+        self.display_mountains()
+        self.display_hikes()
 
 
 class DisplayMountain(QWidget):
