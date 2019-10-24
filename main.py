@@ -124,6 +124,7 @@ class Main(QMainWindow):
         self.avg_speed_label = QLabel()
         self.avg_ascent_label = QLabel()
         self.avg_descent_label = QLabel()
+        self.total_label = QLabel()
         self.total_mountains_label = QLabel()
         self.total_hills_label = QLabel()
         self.dub_wick_label = QLabel()
@@ -181,6 +182,7 @@ class Main(QMainWindow):
         self.statistics_right_layout.addRow("Average Descent: ", self.avg_descent_label)
 
         self.statistics_left_layout.addRow(QLabel("\nMountains:"))
+        self.statistics_left_layout.addRow("Total: ", self.total_label)
         self.statistics_left_layout.addRow("Total Mountains: ", self.total_mountains_label)
         self.statistics_left_layout.addRow("Total Hills (<500m): ", self.total_hills_label)
         self.statistics_left_layout.addRow(QLabel("Areas:"))
@@ -257,6 +259,7 @@ class Main(QMainWindow):
         count_length = cur.execute("SELECT SUM(length) FROM hike").fetchall()
         count_ascent = cur.execute("SELECT SUM(ascent) FROM hike").fetchall()
         count_descent = cur.execute("SELECT SUM(descent) FROM hike").fetchall()
+        count_total = cur.execute("SELECT count(id) FROM mountain").fetchall()
         count_mountains = cur.execute("SELECT count(id) FROM mountain WHERE height >= 500").fetchall()
         count_hills = cur.execute("SELECT count(id) FROM mountain WHERE height < 500").fetchall()
         times = cur.execute("SELECT duration FROM hike").fetchall()
@@ -269,6 +272,7 @@ class Main(QMainWindow):
         count_length = count_length[0][0]
         count_ascent = count_ascent[0][0]
         count_descent = count_descent[0][0]
+        count_total = count_total[0][0]
         count_mountains = count_mountains[0][0]
         count_hills = count_hills[0][0]
         count_dub_wick = count_dub_wick[0][0]
@@ -299,11 +303,12 @@ class Main(QMainWindow):
         self.total_ascent_label.setText(str(count_ascent) + "m")
         self.total_descent_label.setText(str(count_descent) + "m")
         self.avg_time_label.setText(str(count_length / count_hikes) + "m")
-        self.avg_length_label.setText("{0:.2f}m".format(count_length / count_hikes))
+        self.avg_length_label.setText("{0:.2f}km".format(count_length / count_hikes))
         self.avg_time_label.setText("{0:.2f} hours".format(average_seconds / 3600))
         self.avg_speed_label.setText("{0:.2f} km/h".format((count_length / count_hikes) / (average_seconds / 3600)))
         self.avg_ascent_label.setText("{0:.2f}m".format(count_ascent / count_hikes))
         self.avg_descent_label.setText("{0:.2f}m".format(count_descent / count_hikes))
+        self.total_label.setText(str(count_total))
         self.total_mountains_label.setText(str(count_mountains))
         self.total_hills_label.setText(str(count_hills))
         self.dub_wick_label.setText(str(count_dub_wick))
