@@ -17,7 +17,7 @@ class Main(QMainWindow):
         super().__init__()
         self.setWindowTitle(" My Mountains")
         self.setWindowIcon(QIcon("icons/mountain.png"))
-        self.setGeometry(300, 150, 1350, 750)
+        self.setGeometry(300, 150, 1350, 800)
         self.setFixedSize(self.size())
 
         self.UI()
@@ -89,6 +89,13 @@ class Main(QMainWindow):
         self.mountains_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
         self.mountains_table.doubleClicked.connect(self.selected_mountain)
 
+        ##### Bottom Widgets #####
+        self.search_text = QLabel("Search")
+        self.search_entry = QLineEdit()
+        self.search_entry.setPlaceholderText("Search For Mountains")
+        self.search_button = QPushButton("Search")
+        #self.search_button.clicked.connect(self.search_mountains)
+
         ########################
         ##### Tab2 Widgets #####
         ########################
@@ -139,12 +146,21 @@ class Main(QMainWindow):
 
         self.main_layout = QHBoxLayout()
         self.main_left_layout = QVBoxLayout()
+        self.main_bottom_layout = QHBoxLayout()
+        self.bottom_group_box = QGroupBox("Search Mountains")
 
         ##### Add Widgets #####
         ##### Add Left Main Layout Widgets #####
         self.main_left_layout.addWidget(self.mountains_table)
+        self.main_left_layout.addWidget(self.bottom_group_box)
         self.main_layout.addLayout(self.main_left_layout)
         self.tab1.setLayout(self.main_layout)
+
+        self.main_bottom_layout.addWidget(self.search_text)
+        self.main_bottom_layout.addWidget(self.search_entry)
+        self.main_bottom_layout.addWidget(self.search_button)
+        self.bottom_group_box.setLayout(self.main_bottom_layout)
+
 
         ########################
         ##### Tab2 layouts #####
