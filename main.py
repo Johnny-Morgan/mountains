@@ -7,7 +7,6 @@ import add_mountain, add_hike, style, map1
 from dateutil import parser
 from PIL import Image
 
-
 con = sqlite3.connect("mountains.db")
 cur = con.cursor()
 
@@ -94,7 +93,7 @@ class Main(QMainWindow):
         self.search_entry = QLineEdit()
         self.search_entry.setPlaceholderText("Search For Mountains")
         self.search_button = QPushButton("Search")
-        #self.search_button.clicked.connect(self.search_mountains)
+        self.search_button.clicked.connect(self.search_mountains)
 
         ########################
         ##### Tab2 Widgets #####
@@ -161,7 +160,6 @@ class Main(QMainWindow):
         self.main_bottom_layout.addWidget(self.search_button)
         self.bottom_group_box.setLayout(self.main_bottom_layout)
 
-
         ########################
         ##### Tab2 layouts #####
         ########################
@@ -218,7 +216,8 @@ class Main(QMainWindow):
         for i in reversed(range(self.mountains_table.rowCount())):
             self.mountains_table.removeRow(i)
 
-        query = cur.execute("SELECT id, name, height, prominence, longitude, latitude, area, date_climbed FROM mountain")
+        query = cur.execute(
+            "SELECT id, name, height, prominence, longitude, latitude, area, date_climbed FROM mountain")
         for row_data in query:
             row_number = self.mountains_table.rowCount()
             self.mountains_table.insertRow(row_number)
@@ -336,6 +335,27 @@ class Main(QMainWindow):
         self.get_statistics()
         self.display_mountains()
         self.display_hikes()
+
+    def search_mountains(self):
+        value = self.search_entry.text()
+        if value == "":
+            QMessageBox.information(self, "Warning", "Search query cannot be empty!")
+        else:
+            self.search_entry.setText("")
+            query = "SELECT id, name, height, prominence, longitude, latitude, area, date_climbed FROM mountain WHERE name LIKE ? OR area LIKE ?"
+            results = cur.execute(query, ("%" + value + "%", "%" + value + "%")).fetchall()
+            print(results)
+
+            if results == []:
+                QMessageBox.information(self, "Warning", "There is no such mountain")
+            else:
+                for i in reversed(range(self.mountains_table.rowCount())):
+                    self.mountains_table.removeRow(i)  # clear table
+                for row_data in results:
+                    row_number = self.mountains_table.rowCount()
+                    self.mountains_table.insertRow(row_number)
+                    for column_number, data in enumerate(row_data):
+                        self.mountains_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
 
 class DisplayMountain(QWidget):
@@ -468,7 +488,8 @@ class DisplayMountain(QWidget):
                 latitude = float(latitude)
                 query = "UPDATE mountain SET name = ?, height = ?, prominence = ?, " \
                         "longitude = ?, latitude = ?, area = ?, date_climbed = ?, photo = ? WHERE id = ?"
-                cur.execute(query, (name, height, prominence, longitude, latitude, area, date, default_image, mountain_id))
+                cur.execute(query,
+                            (name, height, prominence, longitude, latitude, area, date, default_image, mountain_id))
                 con.commit()
                 QMessageBox.information(self, "Info", "Mountain has been updated")
                 self.close()
