@@ -117,6 +117,13 @@ class Main(QMainWindow):
         self.hikes_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         self.hikes_table.doubleClicked.connect(self.selected_hike)
 
+        ##### Bottom Widgets #####
+        self.search_hikes_text = QLabel("Search")
+        self.search_hikes_entry = QLineEdit()
+        self.search_hikes_entry.setPlaceholderText("Search Hikes")
+        self.search_hikes_button = QPushButton("Search")
+        self.search_hikes_button.clicked.connect(self.search_hikes)
+
         ########################
         ##### Tab3 Widgets #####
         ########################
@@ -166,12 +173,20 @@ class Main(QMainWindow):
 
         self.main_layout = QHBoxLayout()
         self.main_left_layout = QVBoxLayout()
+        self.main_bottom_layout = QHBoxLayout()
+        self.bottom_group_box = QGroupBox("Search Hikes")
 
         ##### Add Widgets #####
         ##### Add Left Main Layout Widgets #####
         self.main_left_layout.addWidget(self.hikes_table)
+        self.main_left_layout.addWidget(self.bottom_group_box)
         self.main_layout.addLayout(self.main_left_layout)
         self.tab2.setLayout(self.main_layout)
+
+        self.main_bottom_layout.addWidget(self.search_hikes_text)
+        self.main_bottom_layout.addWidget(self.search_hikes_entry)
+        self.main_bottom_layout.addWidget(self.search_hikes_button)
+        self.bottom_group_box.setLayout(self.main_bottom_layout)
 
         ########################
         ##### Tab3 layouts #####
@@ -356,6 +371,27 @@ class Main(QMainWindow):
                     self.mountains_table.insertRow(row_number)
                     for column_number, data in enumerate(row_data):
                         self.mountains_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+
+    def search_hikes(self):
+        value = self.search_hikes_entry.text()
+        if value == "":
+            QMessageBox.information(self, "Warning", "Search query cannot be empty!")
+        else:
+            self.search_entry.setText("")
+            query = "SELECT id, length, duration, ascent, descent, date, note FROM hike WHERE note LIKE ? OR date LIKE ?"
+            results = cur.execute(query, ("%" + value + "%", "%" + value + "%")).fetchall()
+            print(results)
+
+            if results == []:
+                QMessageBox.information(self, "Warning", "Sorry no hike found.")
+            else:
+                for i in reversed(range(self.hikes_table.rowCount())):
+                    self.hikes_table.removeRow(i)  # clear table
+                for row_data in results:
+                    row_number = self.hikes_table.rowCount()
+                    self.hikes_table.insertRow(row_number)
+                    for column_number, data in enumerate(row_data):
+                        self.hikes_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
 
 class DisplayMountain(QWidget):
